@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb://Gavin7:gavin7@devconnector-shard-00-00.h5qyc.mongodb.net:27017,devconnector-shard-00-01.h5qyc.mongodb.net:27017,devconnector-shard-00-02.h5qyc.mongodb.net:27017/<dbname>?ssl=true&replicaSet=atlas-14a7ja-shard-0&authSource=admin&retryWrites=true&w=majority",
+  "jwtSecret": "mysecrettoken"
+}

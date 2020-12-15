@@ -5,6 +5,7 @@ const { check, validationResult } = require("express-validator");
 
 const Profile = require("../../models/Profile");
 const User = require("../../models/User");
+const Post = require("../../models/Post");
 
 // @route   GET api/profile/me
 // @desc    get current user profile
@@ -60,7 +61,7 @@ router.post(
     } = req.body;
 
     //Build profile objects
-    const profileFields = {};
+    var profileFields = {};
     profileFields.user = req.user.id;
     if (company) profileFields.company = company;
     if (website) profileFields.website = website;
@@ -68,9 +69,17 @@ router.post(
     if (bio) profileFields.bio = bio;
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
-    if (skills) {
-      profileFields.skills = skills.split(",").map((skill) => skill.trim());
-    }
+    // if (skills) {
+    //   profileFields.skills = skills.split(",").map((skill) => skill.trim());
+    // }
+
+profileFields = {
+  ...profileFields,
+      skills: Array.isArray(skills)
+        ? skills
+        : skills.split(',').map((skill) => ' ' + skill.trim())
+    };
+
 
     //Build social object
     profileFields.social = {};
@@ -150,7 +159,8 @@ router.get("/user/:user_id", async (req, res) => {
 // @access  Private
 router.delete("/", auth, async (req, res) => {
   try {
-    //@todo - remove user posts
+    //Remove user posts
+    await Post.deleteMany({ user: req.user.id });
 
     //Remove profile
     await Profile.findOneAndRemove({ user: req.user.id });
@@ -275,7 +285,7 @@ router.put(
 
     try {
       const profile = await Profile.findOne({ user: req.user.id });
-      profile.experience.unshift(newEdu);
+      profile.education.unshift(newEdu);
       await profile.save();
       res.json(profile);
     } catch (err) {
